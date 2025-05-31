@@ -6,14 +6,66 @@ const PORT = 8000
 const app = express()
 
 app.get('/api', (req, res) => {
-  res.json(startups)
+  let filteredData = startups
+
+  const {
+    industry,
+    country,
+    continent,
+    is_seeking_funding,
+    has_mvp
+  } = req.query
+
+  const toBool = val => val === 'true'
+
+  if (industry) {
+    filteredData = filteredData.filter(startup =>
+      startup.industry.toLowerCase() === industry.toLowerCase()
+    )
+  }
+
+  if (country) {
+    filteredData = filteredData.filter(startup =>
+      startup.country.toLowerCase() === country.toLowerCase()
+    )
+  }
+
+  if (continent) {
+    filteredData = filteredData.filter(startup =>
+      startup.continent.toLowerCase() === continent.toLowerCase()
+    )
+  }
+
+  if (is_seeking_funding) {
+    filteredData = filteredData.filter(startup =>
+      startup.is_seeking_funding === toBool(is_seeking_funding)
+    )
+  }
+
+  if (has_mvp) {
+    filteredData = filteredData.filter(startup =>
+      startup.has_mvp === toBool(has_mvp)
+    )
+  }
+
+  res.json(filteredData)
+  console.log(filteredData)
 })
 
-/*
-Challenge:
-  1. When the client makes a GET request to ‘/api’, serve all of our data as json.
+// Dynamic route: /api/:field/:term
+app.get('/api/:field/:term', (req, res) => {
+  const { field, term } = req.params;
 
-  hint.md for help!
-*/
+  const filtered = startups.filter(startup => {
+    const value = startup[field];
+    if (typeof value === 'string') {
+      return value.toLowerCase() === term.toLowerCase();
+    }
+    return false;
+  });
 
-app.listen(PORT, () => console.log(`server connected on port ${PORT}`))
+  res.json(filtered);
+  console.log(filtered);
+});
+
+app.listen(PORT, () => console.log(`server connected on port ${PORT}`));
