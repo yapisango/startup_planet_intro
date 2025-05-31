@@ -1,71 +1,21 @@
 import express from 'express'
-import { startups } from './data/data.js'
+import { apiRouter } from './routes/apiRoutes.js'
+import cors from 'cors'
 
 const PORT = 8000
 
 const app = express()
 
-app.get('/api', (req, res) => {
-  let filteredData = startups
+app.use(cors())
 
-  const {
-    industry,
-    country,
-    continent,
-    is_seeking_funding,
-    has_mvp
-  } = req.query
+app.use('/api', apiRouter)
 
-  const toBool = val => val === 'true'
-
-  if (industry) {
-    filteredData = filteredData.filter(startup =>
-      startup.industry.toLowerCase() === industry.toLowerCase()
-    )
-  }
-
-  if (country) {
-    filteredData = filteredData.filter(startup =>
-      startup.country.toLowerCase() === country.toLowerCase()
-    )
-  }
-
-  if (continent) {
-    filteredData = filteredData.filter(startup =>
-      startup.continent.toLowerCase() === continent.toLowerCase()
-    )
-  }
-
-  if (is_seeking_funding) {
-    filteredData = filteredData.filter(startup =>
-      startup.is_seeking_funding === toBool(is_seeking_funding)
-    )
-  }
-
-  if (has_mvp) {
-    filteredData = filteredData.filter(startup =>
-      startup.has_mvp === toBool(has_mvp)
-    )
-  }
-
-  res.json(filteredData)
-  console.log(filteredData)
+// 404 fallback middleware for unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    message: "Endpoint not found. Please check the API documentation."
+  })
 })
 
-// Dynamic route: /api/:field/:term
-app.get('/api/:field/:term', (req, res) => {
-  const { field, term } = req.params;
 
-  const filtered = startups.filter(startup => {
-    const value = startup[field];
-    if (typeof value === 'string') {
-      return value.toLowerCase() === term.toLowerCase();
-    }
-    return false;
-  });
-
-  res.json(filtered);
-  console.log(filtered);
-});
-
-app.listen(PORT, () => console.log(`server connected on port ${PORT}`));
+app.listen(PORT, () => console.log(`server connected on port ${PORT}`))
