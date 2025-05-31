@@ -39,7 +39,7 @@ startup_planet_intro/
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/sangoyapi/startup_planet_intro.git
+   git clone https://github.com/yapisango/startup_planet_intro.git
    cd startup_planet_intro
 
 Install dependencies:
